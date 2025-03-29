@@ -3,6 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Meta Open Graph -->
+    <meta property="og:title" content="Undangan Pernikahan Sugeng & Erna" />
+    <meta
+      property="og:description"
+      content="Yuk berikan ucapan dan doa restu terbaik untuk pernikahan kami 💖"
+    />
+    <meta
+      property="og:image"
+      content="https://jaysrahman.github.io/sugeng-erna-wedding/image/1.jpg"
+    />
+    <meta
+      property="og:url"
+      content="https://jaysrahman.github.io/sugeng-erna-wedding/"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Untuk WhatsApp dan Telegram -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Undangan Pernikahan Sugeng & Erna" />
+    <meta
+      name="twitter:description"
+      content="Yuk berikan ucapan dan doa restu terbaik untuk pernikahan kami 💖"
+    />
+    <meta
+      name="twitter:image"
+      content="https://jaysrahman.github.io/sugeng-erna-wedding/image/1.jpg"
+    />
+
     <title>Undangan Pernikahan Sugeng & Erna</title>
 
     <!-- Bootstrap -->
@@ -804,7 +833,11 @@
 
         // Menangani parameter URL
         const urlParams = new URLSearchParams(window.location.search);
-        const toParam = urlParams.get("to") || "Tamu";
+        let toParam = urlParams.get("to") || "Tamu";
+
+        // Ganti tanda + dengan spasi
+        toParam = toParam.replace(/\+/g, " ");
+
         document.getElementById("nameParam").textContent = toParam;
 
         // Menangani tombol Buka Undangan
