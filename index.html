@@ -541,7 +541,7 @@
     <section class="section-6 container mt-5 py-4 bg-light">
       <h3 class="section-title text-center fs-5 pb-4">Galeri Foto</h3>
       <div class="row">
-        <div class="col-6 col-md-4">
+        <div class="col-md-4 mb-3">
           <img
             src="image/3.jpg"
             class="img-fluid gallery-thumbnail"
@@ -551,7 +551,7 @@
             data-bs-src="image/3.jpg"
           />
         </div>
-        <div class="col-6 col-md-4">
+        <div class="col-md-4 mb-3">
           <img
             src="image/4.jpg"
             class="img-fluid gallery-thumbnail"
@@ -561,7 +561,7 @@
             data-bs-src="image/4.jpg"
           />
         </div>
-        <div class="col-6 col-md-4">
+        <div class="col-md-4 mb-3">
           <img
             src="image/5.jpg"
             class="img-fluid gallery-thumbnail"
@@ -571,7 +571,7 @@
             data-bs-src="image/5.jpg"
           />
         </div>
-        <div class="col-6 col-md-4">
+        <!-- <div class="col-md-4">
           <img
             src="image/2.jpg"
             class="img-fluid gallery-thumbnail"
@@ -580,7 +580,7 @@
             data-bs-target="#imageModal"
             data-bs-src="image/2.jpg"
           />
-        </div>
+        </div> -->
       </div>
     </section>
 
@@ -690,7 +690,7 @@
         class="img-fluid rounded mb-2"
         width="300px"
       />
-      <p>
+      <!-- <p>
         Berikan ucapan spesial kalian, <br />langsung ke Whatsapp kami ya.
         Terimakasih.
       </p>
@@ -715,7 +715,81 @@
             <i class="fab fa-whatsapp"></i> Beri Ucapan ke Erna
           </button>
         </div>
-      </a>
+      </a> -->
+    </section>
+
+    <section class="bg-light p-5 pt-3 text-center" id="form-ucapan">
+      <div class="container">
+        <p class="fs-5">Berikan Ucapan & Doa Restu</p>
+        <!-- <p id="jumlah-ucapan">Memuat ucapan...</p>
+
+        <div class="d-flex gap-3 mb-4">
+          <div><strong>Hadir:</strong> <span id="jumlah-hadir">0</span></div>
+          <div>
+            <strong>Tidak Hadir:</strong> <span id="jumlah-tidak-hadir">0</span>
+          </div>
+        </div> -->
+        <div id="countdown" class="countdown-container mb-3">
+          <div class="countdown-box">
+            <div class="countdown-number" id="jumlah-ucapan">0</div>
+            <div class="countdown-label">Ucapan</div>
+          </div>
+          <div class="countdown-box">
+            <div class="countdown-number text-success" id="jumlah-hadir">0</div>
+            <div class="countdown-label text-success">Hadir</div>
+          </div>
+          <div class="countdown-box">
+            <div class="countdown-number text-danger" id="jumlah-tidak-hadir">
+              0
+            </div>
+            <div class="countdown-label text-danger">Tidak Hadir</div>
+          </div>
+        </div>
+
+        <!-- Form Ucapan -->
+        <form id="formUcapan" class="mb-4">
+          <div class="mb-3">
+            <input
+              type="text"
+              class="form-control"
+              name="nama"
+              placeholder="Nama"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <textarea
+              class="form-control"
+              name="ucapan"
+              placeholder="Ucapan atau doa..."
+              required
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <select class="form-select" name="hadir">
+              <option value="true" selected>Hadir</option>
+              <option value="false">Tidak Hadir</option>
+            </select>
+          </div>
+          <div class="button-center">
+            <button type="submit" class="btn-map mb-4" id="submitBtn">
+              <i class="fa fa-paper-plane"></i> Kirim Ucapan
+            </button>
+          </div>
+          <p
+            class="text-success mt-2"
+            id="successMsg"
+            style="display: none"
+          ></p>
+        </form>
+
+        <!-- List Ucapan -->
+        <div
+          class="overflow-auto text-start"
+          style="max-height: 300px"
+          id="listUcapan"
+        ></div>
+      </div>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -820,6 +894,113 @@
         document.execCommand("copy");
         document.body.removeChild(tempInput);
       }
+
+      // Ucapan & Doa Restu
+      const API =
+        "https://ucapan-pernikahan-api-production.up.railway.app/ucapan";
+
+      const form = document.getElementById("formUcapan");
+      const list = document.getElementById("listUcapan");
+      const jumlahUcapan = document.getElementById("jumlah-ucapan");
+      const jumlahHadir = document.getElementById("jumlah-hadir");
+      const jumlahTidakHadir = document.getElementById("jumlah-tidak-hadir");
+
+      function formatTimeAgo(dateString) {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffMs = now - date;
+
+        const detik = Math.floor(diffMs / 1000) % 60;
+        const menit = Math.floor(diffMs / (1000 * 60)) % 60;
+        const jam = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
+        const hari = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        const parts = [];
+        if (hari > 0) parts.push(`${hari} hari`);
+        if (jam > 0 || hari > 0) parts.push(`${jam} jam`);
+        if (menit > 0 || jam > 0 || hari > 0) parts.push(`${menit} menit`);
+        parts.push(`${detik} detik`);
+
+        return parts.join(", ") + " yang lalu";
+      }
+
+      function loadUcapan() {
+        fetch(API)
+          .then((res) => res.json())
+          .then((data) => {
+            jumlahUcapan.textContent = `${data.length}`;
+
+            let hadir = 0,
+              tidakHadir = 0;
+            list.innerHTML = "";
+
+            data.forEach((item) => {
+              if (item.hadir) hadir++;
+              else tidakHadir++;
+
+              list.innerHTML += `
+          <div class="mb-3 p-2 border rounded bg-white">
+            <strong>${item.nama}</strong><br>
+            ${item.ucapan}<br>
+            <small class="text-muted">${formatTimeAgo(item.created_at)}</small>
+          </div>
+        `;
+            });
+
+            jumlahHadir.textContent = hadir;
+            jumlahTidakHadir.textContent = tidakHadir;
+          });
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const body = {
+          nama: formData.get("nama"),
+          ucapan: formData.get("ucapan"),
+          hadir: formData.get("hadir") === "true",
+        };
+
+        // Ubah tombol saat mengirim
+        const btn = document.getElementById("submitBtn");
+        const msg = document.getElementById("successMsg");
+        btn.disabled = true;
+        btn.textContent = "Mengirim Ucapan...";
+        msg.style.display = "none";
+
+        try {
+          const res = await fetch(API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+
+          if (res.ok) {
+            form.reset();
+            loadUcapan();
+
+            // Tampilkan pesan sukses
+            msg.textContent =
+              "Berhasil Mengirim Ucapan, Terimakasih Untuk Ucapan & Doa Restunya";
+            msg.style.display = "block";
+
+            // Sembunyikan setelah 3 detik
+            setTimeout(() => {
+              msg.style.display = "none";
+            }, 3000);
+          } else {
+            alert("Gagal mengirim ucapan. Coba lagi.");
+          }
+        } catch (err) {
+          alert("Terjadi kesalahan. Coba lagi.");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Kirim Ucapan";
+        }
+      });
+
+      loadUcapan();
     </script>
   </body>
 </html>
